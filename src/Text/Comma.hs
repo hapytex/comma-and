@@ -22,13 +22,22 @@ import Data.Default.Class(Default(def))
 import Data.Foldable(toList)
 import Data.String(IsString(fromString))
 
-comma_ :: IsString s => s
+-- | The /string-like/ value for a comma, so @", "@.
+comma_
+  :: IsString s
+  => s  -- ^ A /string-like/ type.
 comma_ = fromString ", "
 
-and_ :: IsString s => s
+-- | The /string-like/ value for an "and", so @" and "@.
+and_
+  :: IsString s
+  => s  -- ^ A /string-like/ type.
 and_ = fromString " and "
 
-commaAnd_ :: IsString s => s
+-- | The /string-like/ value for a comma and an "and", so @", and "@.
+commaAnd_
+  :: IsString s
+  => s  -- ^ A /string-like/ type.
 commaAnd_ = fromString ", and "
 
 -- | The two different ways to join the last two items together: with or without a comma.
