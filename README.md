@@ -7,7 +7,14 @@ Joins text items together by separating these with commas, and "and" at the end.
 
 ## Usage
 
-???
+We can combine elements with:
+
+```
+ghci> comma ["red", "green", "blue"]
+"red, green, and blue"
+```
+
+The package has tooling for the two different comma styles, and can work with any *string-like* type.
 
 ## `comma-and` is *safe* Haskell
 
