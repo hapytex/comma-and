@@ -16,6 +16,10 @@ ghci> comma ["red", "green", "blue"]
 
 The package has tooling for the two different comma styles, and can work with any *string-like* type.
 
+## *String-like* types?
+
+The package can work with types that are an instance of `IsString` and `Monoid`. So this means it works with `String`, `Text`, `ByteString`, `MarkupM`, and probably a lot more types that concatenate with the `Monoid` instance, and are an instance of `IsString`.
+
 ## `comma-and` is *safe* Haskell
 
 The module is compiled with `Safe` and does not depend on unsafe modules.
