@@ -40,6 +40,15 @@ commaAnd_
   => s  -- ^ A /string-like/ type.
 commaAnd_ = fromString ", and "
 
+data CommaValues s = CommaValues { comma :: s, commaAnd :: s } deriving (Eq, Ord, Read, Show)
+
+instance IsString s => Default (CommaValues s) where
+  def = CommaValues comma_ commaAnd_
+
+toCommaValues :: IsString s => CommaStyle -> CommaValues s
+toCommaValues OxfordComma = CommaValues comma_ commaAnd_
+toCommaValues NoComma = CommaValues comma_ and_
+
 -- | The two different ways to join the last two items together: with or without a comma.
 data CommaStyle
   = OxfordComma  -- ^ The /Oxford comma/ which uses a comma before the latest element, also known as /Harvard comma/ or /series comma/.

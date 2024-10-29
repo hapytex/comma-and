@@ -1,5 +1,5 @@
 name:                comma-and
-version:             0.1.0.1
+version:             0.2.0.0
 synopsis: Join text together with commas, and "and".
 description: Join text together with commas, and "and".
 homepage:            https://github.com/hapytex/comma-and#readme
