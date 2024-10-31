@@ -18,7 +18,7 @@ The package has tooling for the two different comma styles, and can work with an
 
 ## *String-like* types?
 
-The package can work with types that are an instance of `IsString` and `Monoid`. So this means it works with `String`, `Text`, `ByteString`, `MarkupM`, and probably a lot more types that concatenate with the `Monoid` instance, and are an instance of `IsString`.
+The package can work with types that are an instance of `IsString` and `Monoid`. So this means it works with `String`, [`Text`](https://hackage.haskell.org/package/text/docs/Data-Text-Internal-Lazy.html#t:Text), [`ByteString`](https://hackage.haskell.org/package/bytestring/docs/Data-ByteString.html#t:ByteString), [`MarkupM`](https://hackage.haskell.org/package/blaze-markup/docs/Text-Blaze-Internal.html#t:MarkupM), [`LaTeX`](https://hackage.haskell.org/package/HaTeX-3.22.4.2/docs/Text-LaTeX-Base-Syntax.html#t:LaTeX), and probably a lot more types that concatenate with the `Monoid` instance, and are an instance of `IsString`.
 
 ## `comma-and` is *safe* Haskell
 

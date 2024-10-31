@@ -13,6 +13,7 @@ module Text.Comma
     and_,
     commaAnd_,
     CommaStyle (OxfordComma, NoComma),
+    CommaValues(CommaValues, commaText, commaAndText),
     lastJoin,
     commaAs,
     commaEmptyAs,
@@ -50,11 +51,14 @@ commaAnd_ ::
   s
 commaAnd_ = fromString ", and "
 
-data CommaValues s = CommaValues {comma :: s, commaAnd :: s} deriving (Eq, Ord, Read, Show)
+-- | A small data type that contains the /string-like/ values for the 'commaText, and the 'commaAndText': the join between the one but last, and last element. This can be used
+-- to define a way to comma-and in a different language.
+data CommaValues s = CommaValues {commaText :: s, commaAndText :: s} deriving (Eq, Ord, Read, Show)
 
 instance (IsString s) => Default (CommaValues s) where
   def = CommaValues comma_ commaAnd_
 
+-- | Convert the given 'CommaStyle' to the corresponding 'CommaValue' item.
 toCommaValues :: (IsString s) => CommaStyle -> CommaValues s
 toCommaValues OxfordComma = CommaValues comma_ commaAnd_
 toCommaValues NoComma = CommaValues comma_ and_
