@@ -3,7 +3,7 @@ module Text.CommaSpec where
 import Data.Default.Class(Default(def))
 
 import Test.Hspec(Spec, describe, it, shouldBe)
-import Text.Comma(CommaStyle(OxfordComma, NoComma), comma, commaAs, commaEmpty, commaEmptyAs, lastJoin, noComma, noCommaEmpty)
+import Text.Comma(CommaStyle(OxfordComma, NoComma), CommaValues(commaText, commaAndText), comma, commaAs, commaEmpty, commaEmptyAs, commaEmptyWith, commaWith, lastJoin, noComma, noCommaEmpty, toCommaValues)
 
 spec :: Spec
 spec = describe "and" $ do
@@ -45,6 +45,24 @@ spec = describe "and" $ do
       commaEmptyAs "and" NoComma ["red"] `shouldBe` "red"
       commaEmptyAs "and" NoComma ["red", "green"] `shouldBe` "red and green"
       commaEmptyAs "and" NoComma ["red", "green", "blue"] `shouldBe` "red, green and blue"
+    it "commaWith" $ do
+      commaWith (toCommaValues OxfordComma) [] `shouldBe` ""
+      commaWith (toCommaValues OxfordComma) ["red"] `shouldBe` "red"
+      commaWith (toCommaValues OxfordComma) ["red", "green"] `shouldBe` "red, and green"
+      commaWith (toCommaValues OxfordComma) ["red", "green", "blue"] `shouldBe` "red, green, and blue"
+      commaWith (toCommaValues NoComma) [] `shouldBe` ""
+      commaWith (toCommaValues NoComma) ["red"] `shouldBe` "red"
+      commaWith (toCommaValues NoComma) ["red", "green"] `shouldBe` "red and green"
+      commaWith (toCommaValues NoComma) ["red", "green", "blue"] `shouldBe` "red, green and blue"
+    it "commaEmptyWith" $ do
+      commaEmptyWith "and" (toCommaValues OxfordComma) [] `shouldBe` "and"
+      commaEmptyWith "and" (toCommaValues OxfordComma) ["red"] `shouldBe` "red"
+      commaEmptyWith "and" (toCommaValues OxfordComma) ["red", "green"] `shouldBe` "red, and green"
+      commaEmptyWith "and" (toCommaValues OxfordComma) ["red", "green", "blue"] `shouldBe` "red, green, and blue"
+      commaEmptyWith "and" (toCommaValues NoComma) [] `shouldBe` "and"
+      commaEmptyWith "and" (toCommaValues NoComma) ["red"] `shouldBe` "red"
+      commaEmptyWith "and" (toCommaValues NoComma) ["red", "green"] `shouldBe` "red and green"
+      commaEmptyWith "and" (toCommaValues NoComma) ["red", "green", "blue"] `shouldBe` "red, green and blue"
     it "lastJoin" $ do
       lastJoin OxfordComma `shouldBe` ", and "
       lastJoin NoComma `shouldBe` " and "
@@ -54,3 +72,7 @@ spec = describe "and" $ do
       maxBound `shouldBe` NoComma
       succ OxfordComma `shouldBe` NoComma
       compare OxfordComma NoComma `shouldBe` LT
+    it "CommaValues" $ do
+      toCommaValues def `shouldBe` def
+      commaText (toCommaValues def) `shouldBe` commaText def
+      commaAndText (toCommaValues def) `shouldBe` commaAndText def

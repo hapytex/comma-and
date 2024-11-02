@@ -9,20 +9,27 @@
 --
 -- This module provides functions to join elements of /string-like/ types by adding a comma between the elements, and an "and" (optionally with a comma) between the one-but-last and the last element.
 module Text.Comma
-  ( comma_,
-    and_,
-    commaAnd_,
+  (
     CommaStyle (OxfordComma, NoComma),
     CommaValues(CommaValues, commaText, commaAndText),
+    toCommaValues,
     lastJoin,
+    -- * Join with commas and "and"
     commaAs,
     commaEmptyAs,
+    commaWith,
+    commaEmptyWith,
     comma,
     noComma,
     commaEmpty,
     noCommaEmpty,
+    -- * Basic joining of elements
     combineWith,
     combineWithEmpty,
+    -- * /String-like/ constants
+    comma_,
+    and_,
+    commaAnd_,
   )
 where
 
@@ -53,13 +60,20 @@ commaAnd_ = fromString ", and "
 
 -- | A small data type that contains the /string-like/ values for the 'commaText, and the 'commaAndText': the join between the one but last, and last element. This can be used
 -- to define a way to comma-and in a different language.
-data CommaValues s = CommaValues {commaText :: s, commaAndText :: s} deriving (Eq, Ord, Read, Show)
+data CommaValues s
+  = CommaValues  -- ^ The (only) data constructor that takes values for the comma and the "comma and" to join.
+    {commaText :: s  -- ^ The text used to join two elements together, if the second element is /not/ the last element in the series.
+    , commaAndText :: s  -- ^ The text used to join the one but last and the last element together.
+    } deriving (Eq, Ord, Read, Show)
 
 instance (IsString s) => Default (CommaValues s) where
   def = CommaValues comma_ commaAnd_
 
 -- | Convert the given 'CommaStyle' to the corresponding 'CommaValue' item.
-toCommaValues :: (IsString s) => CommaStyle -> CommaValues s
+toCommaValues
+  :: IsString s
+  => CommaStyle  -- ^ The given 'CommaStyle' to convert into the corrsponding 'CommaValues' object.
+  -> CommaValues s  -- ^ A 'CommaValues' object that contains the separators for the items.
 toCommaValues OxfordComma = CommaValues comma_ commaAnd_
 toCommaValues NoComma = CommaValues comma_ and_
 
@@ -120,26 +134,66 @@ _combine _ c0 c1 (x : x2 : xs) = go xs x x2
     go [] s1 s2 = s1 <> c1 <> s2
     go (s3 : ss) s1 s2 = s1 <> c0 <> go ss s2 s3
 
--- | Joins the sequence of items with the /Oxford comma/ style, uses the empty string if there are no items.
-comma :: (IsString s, Monoid s, Foldable f) => f s -> s
+-- | Joins the sequence of items with the /Oxford comma/ style, uses 'mempty' as empty string if there are no items.
+comma
+  :: (IsString s, Monoid s, Foldable f)
+  => f s  -- ^ The 'Foldable' of string-like elements to join.
+  -> s -- ^ The result that has joined the elements with commas and just "and" as last separator.
 comma = combineWith comma_ commaAnd_
 
--- | Joins the sequence of items with the /no comma/ style, uses the empty string if there are no items.
-noComma :: (IsString s, Monoid s, Foldable f) => f s -> s
+-- | Joins the sequence of items with the /no comma/ style, uses 'mempty' as empty string if there are no items.
+noComma
+  :: (IsString s, Monoid s, Foldable f)
+  => f s  -- ^ The 'Foldable' of string-like elements to join.
+  -> s  -- ^ The result that has joined the elements with commas, and ", and" (with comma) as last separator.
 noComma = combineWith comma_ and_
 
 -- | Join the sequence of items with the /Oxford comma/ style, uses a given "string" if there are no items.
-commaEmpty :: (IsString s, Semigroup s, Foldable f) => s -> f s -> s
+commaEmpty
+  :: (IsString s, Semigroup s, Foldable f)
+  => s  -- ^ The item to return if the 'Foldable' is empty.
+  -> f s  -- ^ The 'Foldable' of string-like elements to join.
+  -> s -- ^ The result that has joined the elements with commas and just "and" as last separator.
 commaEmpty e = combineWithEmpty e comma_ commaAnd_
 
 -- | Join the sequence of items with the /no comma/ style, uses a given "string" if there are no items.
-noCommaEmpty :: (IsString s, Semigroup s, Foldable f) => s -> f s -> s
+noCommaEmpty
+  :: (IsString s, Semigroup s, Foldable f)
+  => s  -- ^ The item to return if the 'Foldable' is empty.
+  -> f s  -- ^ The 'Foldable' of string-like elements to join.
+  -> s  -- ^ The result that has joined the elements with commas, and ", and" (with comma) as last separator.
 noCommaEmpty e = combineWithEmpty e comma_ and_
 
--- | Join the sequence of items with the given comma style, uses the empty string if there are no items.
-commaAs :: (IsString s, Monoid s, Foldable f) => CommaStyle -> f s -> s
+-- | Join the sequence of items with the given comma style, uses 'mempty' as empty string if there are no items.
+commaAs
+  :: (IsString s, Monoid s, Foldable f)
+  => CommaStyle  -- ^ The given 'CommaStyle' to use.
+  -> f s  -- ^ The 'Foldable' of string-like elements to join.
+  -> s  -- ^ The result that has joined the elements with commas as specified by the given 'CommaStyle'.
 commaAs = combineWith comma_ . lastJoin
 
 -- | Join the sequence of items with the given comma style, uses a given "string" if there are no items.
-commaEmptyAs :: (IsString s, Semigroup s, Foldable f) => s -> CommaStyle -> f s -> s
+commaEmptyAs
+  :: (IsString s, Semigroup s, Foldable f)
+  => s  -- ^ The item to return if the 'Foldable' is empty.
+  -> CommaStyle  -- ^ The given 'CommaStyle' to use.
+  -> f s  -- ^ The 'Foldable' of string-like elements to join.
+  -> s  -- ^ The result that has joined the elements with commas as specified by the given 'CommaStyle'.
 commaEmptyAs e = combineWithEmpty e comma_ . lastJoin
+
+-- | Join the sequence of items with the given 'CommaValues', uses 'mempty' as empty string if there are no items.
+commaWith
+  :: (IsString s, Monoid s, Foldable f)
+  => CommaValues s  -- ^ A 'CommaValues' object that determines the normal separator and the last separator.
+  -> f s  -- ^ The 'Foldable' of string-like elements to join.
+  -> s  -- ^ The result that has joined the elements with commas as specified by the given 'CommaValues'.
+commaWith ~(CommaValues c ca) = combineWith c ca
+
+-- | Join the sequence of items with the given 'CommaValues', uses a given "string" if there are no items.
+commaEmptyWith
+  :: (IsString s, Semigroup s, Foldable f)
+  => s  -- ^ The item to return if the 'Foldable' is empty.
+  -> CommaValues s  -- ^ A 'CommaValues' object that determines the normal separator and the last separator.
+  -> f s  -- ^ The 'Foldable' of string-like elements to join.
+  -> s  -- ^ The result that has joined the elements with commas as specified by the given 'CommaValues'.
+commaEmptyWith e ~(CommaValues c ca) = combineWithEmpty e c ca
