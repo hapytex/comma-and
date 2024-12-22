@@ -33,6 +33,7 @@ module Text.Comma
     comma_,
     and_,
     commaAnd_,
+    space_,
   )
 where
 
@@ -46,6 +47,14 @@ comma_ ::
   -- | A /string-like/ type.
   s
 comma_ = fromString ", "
+
+-- | The /string-like/ value for a space, so @" "@.
+space_ ::
+  (IsString s) =>
+  -- | A /string-like/ type.
+  s
+space_ = fromString " "
+
 
 -- | The /string-like/ value for an "and", so @" and "@.
 and_ ::
@@ -85,6 +94,19 @@ toCommaValues ::
   CommaValues s
 toCommaValues OxfordComma = CommaValues comma_ commaAnd_
 toCommaValues NoComma = CommaValues comma_ and_
+
+-- | Convert the given 'CommaStyle' to the corresponding 'CommaValue' item with a base combinator.
+toCommaValuesWith ::
+  (Monoid s, IsString s) =>
+  -- | The "base" of the last join, like @"and"@ or @"or"@
+  s ->
+  -- | The given 'CommaStyle' to convert into the corrsponding 'CommaValues' object.
+  CommaStyle ->
+  -- | A 'CommaValues' object that contains the separators for the items.
+  CommaValues s
+toCommaValues base OxfordComma = CommaValues comma_ (comma_ <> base <> space_)
+toCommaValues base NoComma = CommaValues comma_ (space_ <> base <> space_)
+
 
 -- | The two different ways to join the last two items together: with or without a comma.
 data CommaStyle
