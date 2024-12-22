@@ -13,6 +13,7 @@ module Text.Comma
     CommaStyle (OxfordComma, NoComma),
     CommaValues (CommaValues, commaText, commaAndText),
     toCommaValues,
+    toCommaValuesWith,
     lastJoin,
 
     -- * Join with commas and "and"
@@ -104,8 +105,8 @@ toCommaValuesWith ::
   CommaStyle ->
   -- | A 'CommaValues' object that contains the separators for the items.
   CommaValues s
-toCommaValues base OxfordComma = CommaValues comma_ (comma_ <> base <> space_)
-toCommaValues base NoComma = CommaValues comma_ (space_ <> base <> space_)
+toCommaValuesWith base OxfordComma = CommaValues comma_ (comma_ <> base <> space_)
+toCommaValuesWith base NoComma = CommaValues comma_ (space_ <> base <> space_)
 
 
 -- | The two different ways to join the last two items together: with or without a comma.
